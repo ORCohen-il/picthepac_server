@@ -1,0 +1,22 @@
+{
+  "name": "picthepac",
+  "version": "1.0.0",
+  "description": "",
+  "main": "picthepacExpress.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon ServerExp.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "cors": "^2.8.5",
+    "express": "^4.17.3",
+    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.15",
+    "sequelize": "^6.20.1",
+    "uid-generator": "^2.0.0"
+  }
+}
