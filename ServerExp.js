@@ -3,6 +3,7 @@ const express = require("express");
 var cors = require("cors");
 const loginRouter = require("./scripts/routes/Login");
 const deliveriesRouter = require("./scripts/routes/Deliveries");
+const extensionsRouter = require("./scripts/routes/Extensions");
 const mongo_Schema = require("./scripts/models/mongo_Schema");
 const global = require("./scripts/routes/global");
 const Token = require("./scripts/models/Token");
@@ -20,6 +21,7 @@ app.use(express.json());
 app.get((req, res) => {
   res.send("Bad Request !");
 });
+
 app.get("/", (req, res) => {
   res.send("Bad Request !");
 });
@@ -30,6 +32,7 @@ app.use("/login", loginRouter);
 
 // check token before send response
 const token_chk = async (req, res, next) => {
+  // console.log(req);
   const response = await mongo_Schema.Auth.findOne({ token: req.query.token });
   if (response != null) {
     let time = moment().format("YYYY-MM-DD HH:MM");
@@ -46,15 +49,21 @@ const token_chk = async (req, res, next) => {
       });
       ResToken.SetMassage("Token Expired or not valid");
       ResToken.SetToken("XXXXXXXXXX", false);
+      ResToken.SetData([]);
       res.send(ResToken);
     }
   } else {
-    res.send("token Expired or not valid");
+    ResToken.SetMassage("Token Expired or not valid");
+    ResToken.SetToken("XXXXXXXXXX", false);
+    ResToken.SetData([]);
+    res.send(ResToken);
     return;
   }
 };
 
 app.use(token_chk);
+
+app.use("/extensions", extensionsRouter);
 
 app.use("/deliveries", deliveriesRouter);
 

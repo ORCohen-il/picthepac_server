@@ -13,6 +13,7 @@ const deliveries = db.sequelize.define("delivery", {
   },
   order_number: {
     type: Sequelize.INTEGER,
+    key: true,
   },
   city: {
     type: Sequelize.STRING,
@@ -40,6 +41,49 @@ const deliveries = db.sequelize.define("delivery", {
   },
   deleted: {
     type: Sequelize.INTEGER,
+  },
+  phone: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+});
+
+const emissary = db.sequelize.define("emissary", {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+  },
+  aid: {
+    type: Sequelize.INTEGER,
+  },
+  name: {
+    type: Sequelize.STRING,
+  },
+  email: {
+    type: Sequelize.STRING,
+  },
+  phone: {
+    type: Sequelize.STRING,
+  },
+  city: {
+    type: Sequelize.STRING,
+  },
+});
+
+const emissary_deliveries = db.sequelize.define("emissary_deliveries", {
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+  },
+  emissary: {
+    type: Sequelize.INTEGER,
+  },
+  shipping: {
+    type: Sequelize.INTEGER,
+    foreignKey: true,
+  },
+  date: {
+    type: Sequelize.STRING,
   },
 });
 
@@ -89,6 +133,57 @@ customers.hasMany(deliveries, {
   },
 });
 
+emissary_deliveries.hasOne(deliveries, {
+  sourceKey: "shipping",
+  foreignKey: {
+    name: "order_number",
+    allowNull: false,
+  },
+});
+
+const cities = db.sequelize.define("cities", {
+  // include: [{}],
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+  },
+  symbol: {
+    type: Sequelize.INTEGER,
+  },
+  name: {
+    type: Sequelize.STRING,
+  },
+  name_eng: {
+    type: Sequelize.STRING,
+  },
+  symbol_state: {
+    type: Sequelize.INTEGER,
+  },
+  name_state: {
+    type: Sequelize.STRING,
+  },
+});
+
+const streets = db.sequelize.define("streets", {
+  // include: [{}],
+  id: {
+    type: Sequelize.INTEGER,
+    primaryKey: true,
+  },
+  name: {
+    type: Sequelize.STRING,
+  },
+  symbol: {
+    type: Sequelize.INTEGER,
+  },
+  city_name: {
+    type: Sequelize.STRING,
+  },
+  symbol_city: {
+    type: Sequelize.INTEGER,
+  },
+});
+
 // deliveries.belongsToMany(deliveries,{ through: customers })
 
-module.exports = { customers, deliveries };
+module.exports = { customers, deliveries, cities, streets, emissary, emissary_deliveries };

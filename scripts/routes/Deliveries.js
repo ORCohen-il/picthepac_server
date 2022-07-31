@@ -3,7 +3,7 @@ const router = express.Router();
 var mysql = require("mysql");
 const Delivery = require("../models/Delivery");
 const axios = require("axios");
-const db = require("../config/database-sql");
+// const db = require("../config/database-sql");
 const mysql_Schema = require("../models/mysql_Schema");
 const moment = require("moment");
 const { Op } = require("sequelize");
@@ -30,10 +30,42 @@ con.connect((err) => {
   }
 });
 
-// restApi to all req
-// router.get("/", (req, res) => {
-//   res.send("page not found");
-// });
+// restApi Method -> get all open orders
+router.get("/open", async (req, res) => {
+  mysql_Schema.deliveries
+    .findAll({
+      where: {
+        status: {
+          [Op.ne]: 4,
+        },
+      },
+    })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
+
+// restApi Method -> get all open orders
+router.get("/openEmissary?:aid", async (req, res) => {
+  mysql_Schema.emissary_deliveries
+    .findAll({
+      include: [{ model: mysql_Schema.deliveries }],
+      where: {
+        emissary: {
+          [Op.eq]: req.query.aid,
+        },
+      },
+    })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.send(err);
+    });
+});
 
 // restApi Test
 router.get("/Test", async (req, res) => {
@@ -47,28 +79,56 @@ router.get("/Test", async (req, res) => {
     });
 });
 
-// restApi Method -> get all orders
-router.get("/", async (req, res) => {
-  mysql_Schema.deliveries
-    .findAll()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.send(err);
-    });
+// restApi Method -> get one order
+router.get("/?:id", async (req, res) => {
+  let id = req.query.id;
+  res.send(id);
+  // if (isNaN(id) === false) {
+  //   try {
+  //     let sql_query = `select * from orders where order_number =  ${id}`;
+  //     con.query(sql_query, (err, result) => {
+  //       if (err) throw err;
+  //       if (result.length != 0) {
+  //         ResDelivery.GenerateNewDelivery(result, true, "find orders success");
+  //         res.send(ResDelivery);
+  //       } else {
+  //         ResDelivery.GenerateNewDelivery(result, false, `order => ${id} not exists`);
+  //         res.send(ResDelivery);
+  //       }
+  //     });
+  //   } catch (error) {
+  //     res.send(error);
+  //   }
+  // } else {
+  //   res.send("Eror Request");
+  // }
 });
 
-// restApi Method -> get all open orders
-router.get("/open", async (req, res) => {
-  mysql_Schema.deliveries
-    .findAll({
-      where: {
-        status: {
-          [Op.ne]: 4,
+const findOne = function (req, res, next) {
+  if (req.query.id) {
+    mysql_Schema.deliveries
+      .findOne({
+        where: {
+          order_number: {
+            [Op.eq]: req.query.id,
+          },
         },
-      },
-    })
+      })
+      .then((data) => {
+        {
+          data ? res.send(data) : res.send([]);
+        }
+        // if (data) res.send(data) else res.send("");
+      });
+  } else {
+    next();
+  }
+};
+
+// restApi Method -> get all orders
+router.get("/", [findOne], async (req, res) => {
+  mysql_Schema.deliveries
+    .findAll()
     .then((data) => {
       res.send(data);
     })
@@ -101,30 +161,6 @@ router.post("/add", async (req, res) => {
       res.status(400);
       res.send(err.errors[0].message);
     });
-});
-
-// restApi Method -> get one order
-router.get("/order?:id", async (req, res) => {
-  let id = req.query.id;
-  if (isNaN(id) === false) {
-    try {
-      let sql_query = `select * from orders where order_number =  ${id}`;
-      con.query(sql_query, (err, result) => {
-        if (err) throw err;
-        if (result.length != 0) {
-          ResDelivery.GenerateNewDelivery(result, true, "find orders success");
-          res.send(ResDelivery);
-        } else {
-          ResDelivery.GenerateNewDelivery(result, false, `order => ${id} not exists`);
-          res.send(ResDelivery);
-        }
-      });
-    } catch (error) {
-      res.send(error);
-    }
-  } else {
-    res.send("Eror Request");
-  }
 });
 
 //restApi Method -> update order
@@ -207,6 +243,12 @@ router.put("/order_status", async (req, res) => {
       success: false,
     });
   }
+});
+
+// restApi to all req
+router.get("*", (req, res) => {
+  res.status(404);
+  res.send("Bed request");
 });
 
 // set timeout by getting a milliseconds

@@ -12,6 +12,7 @@ const generatorToken = async (login) => {
   return new Promise(async (resolve, reject) => {
     let uuid_token = await mongo_Schema.newToken();
     let token = new mongo_Schema.Auth({
+      aid: login.aid,
       email: login.email,
       name: login.name,
       token: uuid_token,
@@ -38,15 +39,19 @@ router.post("/", async (req, res) => {
       .then(async (result) => {
         if (result.length != 0) {
           let token = await generatorToken(result[0]);
+          let aid = result[0].aid;
           ResToken.SetToken(token, true);
+          ResToken.SetAid(aid);
           res.send(ResToken);
         } else {
+          ResToken.SetMassage("The username or password is incorrect");
           res.send(ResToken);
         }
       })
       .catch((err) => res.send(err));
   } else {
-    res.send("missing params");
+    ResToken.SetMassage("missing params");
+    res.send(ResToken);
   }
 });
 

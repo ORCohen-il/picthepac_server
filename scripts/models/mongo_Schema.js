@@ -10,6 +10,7 @@ const mongoConnect = mongoose.connect("mongodb://userout:1q2w3e4R%24@143.47.232.
 
 const UserSchema = new mongoose.Schema({
   // id: { type: ObjectId },
+  aid: { type: String },
   name: { type: String },
   email: { type: String },
   password: { type: String },
@@ -19,6 +20,7 @@ const User = mongoose.model("user", UserSchema);
 
 const TokenSchema = new mongoose.Schema({
   // id: { type: ObjectId },
+  aid: { type: String },
   email: { type: String },
   name: { type: String },
   token: { type: String },
