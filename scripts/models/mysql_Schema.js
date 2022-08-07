@@ -37,7 +37,7 @@ const deliveries = db.sequelize.define("delivery", {
     type: Sequelize.INTEGER,
   },
   completed: {
-    type: Sequelize.STRING,
+    type: Sequelize.ENUM("TRUE", "FALSE"),
   },
   deleted: {
     type: Sequelize.INTEGER,
@@ -48,44 +48,68 @@ const deliveries = db.sequelize.define("delivery", {
   },
 });
 
-const emissary = db.sequelize.define("emissary", {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
+const emissary = db.sequelize.define(
+  "emissary",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+    },
+    aid: {
+      type: Sequelize.INTEGER,
+    },
+    name: {
+      type: Sequelize.STRING,
+    },
+    email: {
+      type: Sequelize.STRING,
+    },
+    phone: {
+      type: Sequelize.STRING,
+    },
+    city: {
+      type: Sequelize.STRING,
+    },
   },
-  aid: {
-    type: Sequelize.INTEGER,
-  },
-  name: {
-    type: Sequelize.STRING,
-  },
-  email: {
-    type: Sequelize.STRING,
-  },
-  phone: {
-    type: Sequelize.STRING,
-  },
-  city: {
-    type: Sequelize.STRING,
-  },
-});
+  {
+    freezeTableName: true,
+  }
+);
 
-const emissary_deliveries = db.sequelize.define("emissary_deliveries", {
-  id: {
-    type: Sequelize.INTEGER,
-    primaryKey: true,
-  },
-  emissary: {
-    type: Sequelize.INTEGER,
-  },
-  shipping: {
-    type: Sequelize.INTEGER,
-    foreignKey: true,
-  },
-  date: {
-    type: Sequelize.STRING,
-  },
-});
+const emissary_deliveries = db.sequelize.define(
+  "emissary_deliveries",
+  {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+    },
+    emissary: {
+      type: Sequelize.INTEGER,
+    },
+    shipping: {
+      type: Sequelize.INTEGER,
+      foreignKey: true,
+    },
+    date: {
+      type: Sequelize.STRING,
+    },
+    emissary_comments: {
+      type: Sequelize.STRING,
+    },
+    updatedAt: {
+      type: Sequelize.STRING,
+    },
+  }
+  // {
+  //   hooks: {
+  //     afterUpdate: (record, options) => {
+  //       options.raw
+  //       record.
+  //       record.dataValues.updatedAt = moment("2018-10-10").format("YYYY-MM-DD HH:mm:ss");
+  //     },
+  //   },
+  // }
+);
 
 const customers = db.sequelize.define("customer", {
   // include: [{}],

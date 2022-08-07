@@ -2,10 +2,10 @@
   "name": "picthepac",
   "version": "1.0.0",
   "description": "",
-  "main": "picthepacExpress.js",
+  "main": "App_server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ServerExp.js"
+    "start": "nodemon App_server.js"
   },
   "author": "",
   "license": "ISC",

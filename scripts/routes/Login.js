@@ -1,9 +1,11 @@
+"use strict";
 const express = require("express");
 const router = express.Router();
 var mysql = require("mysql");
 const mongo_Schema = require("../models/mongo_Schema");
-const Token = require("../models/Token");
+const Token = require("../models/tokenModal");
 const moment = require("moment");
+const RES_ENTITY = require("../models/responseModal");
 
 let ResToken = new Token();
 
@@ -56,7 +58,7 @@ router.post("/", async (req, res) => {
 });
 
 // restApi Method -> validToken
-router.post("/cvt?:token", async (req, res) => {
+router.post("/token_validation?:token", async (req, res) => {
   let details = { token: req.query.token };
 
   mongo_Schema.Auth.findOne(details)
@@ -99,6 +101,11 @@ router.delete("/", async (req, res) => {
     .catch((e) => {
       res.send(e.message);
     });
+});
+
+router.all("**", (req, res) => {
+  res.status(404);
+  res.send(RES_ENTITY.BAD_REQUEST);
 });
 
 module.exports = router;
