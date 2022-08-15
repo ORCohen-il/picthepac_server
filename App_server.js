@@ -21,7 +21,7 @@ const newGlobal = new global();
 const app = express();
 let ResToken = new Token();
 
-newGlobal.GenerateNewGlobal("http://localhost:", 3400, "/");
+newGlobal.GenerateNewGlobal("http://localhost:", 9050, "/");
 app.use(cors());
 app.use(express.json());
 

@@ -1,5 +1,7 @@
 const { Sequelize } = require("sequelize");
 const db = require("../config/database-sql");
+const moment = require("moment");
+const { Op } = require("sequelize");
 
 // const customers_deliveries = customers.hasMany(deliveries, { as: "deliveries" });
 
@@ -96,19 +98,36 @@ const emissary_deliveries = db.sequelize.define(
     emissary_comments: {
       type: Sequelize.STRING,
     },
+    status: {
+      type: Sequelize.INTEGER,
+    },
     updatedAt: {
       type: Sequelize.STRING,
     },
+  },
+  {
+    hooks: {
+      // beforeUpdate: (record, options) => {
+      //   if (record.id > 2) {
+      //     throw new Error("You can't grant this user an access level above 10!");
+      //   }
+      // },
+      afterUpdate: async (record, options) => {
+        if (record.changed()) {
+          record.update(
+            { updatedAt: moment().format("YYYY-MM-DD") },
+            {
+              where: {
+                shipping: {
+                  [Op.eq]: parseInt(record.order_number),
+                },
+              },
+            }
+          );
+        }
+      },
+    },
   }
-  // {
-  //   hooks: {
-  //     afterUpdate: (record, options) => {
-  //       options.raw
-  //       record.
-  //       record.dataValues.updatedAt = moment("2018-10-10").format("YYYY-MM-DD HH:mm:ss");
-  //     },
-  //   },
-  // }
 );
 
 const customers = db.sequelize.define("customer", {

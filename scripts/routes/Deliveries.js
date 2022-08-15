@@ -124,6 +124,7 @@ router
   })
   .put("/", async (req, res) => {
     let reqBody = req.body;
+    console.log(reqBody);
     let order = await findOneOrder(reqBody.order_number);
     if (order) {
       await mysql_Schema.deliveries
@@ -144,7 +145,7 @@ router
         )
         .then((data) => {
           {
-            data != 0 ? res.send(RES_ENTITY.UPDATE_SUCCUSS) : res.send(RES_ENTITY.UPDATE_UNSUCCESS);
+            data != 0 ? res.send(RES_ENTITY.UPDATE_SUCCESS) : res.send(RES_ENTITY.UPDATE_UNSUCCESS);
           }
         })
         .catch((err) => {
@@ -206,7 +207,7 @@ router
 
     await mysql_Schema.emissary_deliveries
       .update(
-        { emissary_comments: resData.notes, updatedAt: moment().format("YYYY-MM-DD HH:mm:ss") },
+        { emissary_comments: resData.notes, status: resData.status },
         {
           where: {
             shipping: {
@@ -217,11 +218,13 @@ router
         }
       )
       .then((data) => {
+        data = data[0];
         {
           data != 0 ? res.send(RES_ENTITY.UPDATE_SUCCUSS) : res.send(RES_ENTITY.UPDATE_UNSUCCESS);
         }
       })
       .catch((err) => {
+        console.log(err);
         res.status(404);
         res.send(RES_ENTITY.UPDATE_UNSUCCESS);
       });
